@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Storage Test File Generator</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --card: #1a1d27;
+      --border: #2a2e3b;
+      --text: #e8eaed;
+      --muted: #9aa0a6;
+      --accent: #8ab4f8;
+      --accent-hover: #aecbfa;
+      --success: #81c995;
+      --warning: #fdd663;
+      --danger: #f28b82;
+      --input-bg: #12141c;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+      line-height: 1.5;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 520px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .field {
+      margin-bottom: 1.25rem;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 0.7rem 0.9rem;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--accent);
+    }
+
+    .size-row {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .size-row input {
+      flex: 1;
+    }
+
+    .size-row select {
+      width: 110px;
+      flex-shrink: 0;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .radio-option input {
+      accent-color: var(--accent);
+      width: 16px;
+      height: 16px;
+    }
+
+    .hint {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.35rem;
+    }
+
+    .btn {
+      width: 100%;
+      background: var(--accent);
+      color: #0f1117;
+      border: none;
+      border-radius: 8px;
+      padding: 0.85rem 1.25rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .btn:hover:not(:disabled) {
+      background: var(--accent-hover);
+    }
+
+    .btn:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      margin-top: 0.75rem;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--border);
+      color: var(--text);
+    }
+
+    .progress-wrap {
+      display: none;
+      margin-top: 1.25rem;
+    }
+
+    .progress-wrap.visible {
+      display: block;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.15s ease;
+      border-radius: 4px;
+    }
+
+    .progress-text {
+      font-size: 0.85rem;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .status {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .status.visible {
+      display: block;
+    }
+
+    .status.success {
+      background: rgba(129, 201, 149, 0.12);
+      color: var(--success);
+      border: 1px solid rgba(129, 201, 149, 0.25);
+    }
+
+    .status.error {
+      background: rgba(242, 139, 130, 0.12);
+      color: var(--danger);
+      border: 1px solid rgba(242, 139, 130, 0.25);
+    }
+
+    .status.info {
+      background: rgba(138, 180, 248, 0.12);
+      color: var(--accent);
+      border: 1px solid rgba(138, 180, 248, 0.25);
+    }
+
+    .presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .preset {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 6px;
+      padding: 0.3rem 0.65rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .preset:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    footer {
+      margin-top: 2rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+      max-width: 480px;
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .warning-box {
+      background: rgba(253, 214, 99, 0.1);
+      border: 1px solid rgba(253, 214, 99, 0.25);
+      color: var(--warning);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+      margin-bottom: 1.25rem;
+      display: none;
+    }
+
+    .warning-box.visible {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Storage Test File Generator</h1>
+      <p class="subtitle">Create files from 10 KB to 100 GB to test drives, uploads &amp; bandwidth</p>
+    </header>
+
+    <div class="card">
+      <div class="field">
+        <label for="filename">File name</label>
+        <input type="text" id="filename" value="test-file.bin" spellcheck="false" />
+      </div>
+
+      <div class="field">
+        <label for="size">Size</label>
+        <div class="size-row">
+          <input type="number" id="size" min="1" step="any" value="100" />
+          <select id="unit">
+            <option value="KB">KB</option>
+            <option value="MB" selected>MB</option>
+            <option value="GB">GB</option>
+          </select>
+        </div>
+        <div class="presets">
+          <button type="button" class="preset" data-size="10" data-unit="KB">10 KB</button>
+          <button type="button" class="preset" data-size="1" data-unit="MB">1 MB</button>
+          <button type="button" class="preset" data-size="100" data-unit="MB">100 MB</button>
+          <button type="button" class="preset" data-size="1" data-unit="GB">1 GB</button>
+          <button type="button" class="preset" data-size="5" data-unit="GB">5 GB</button>
+          <button type="button" class="preset" data-size="10" data-unit="GB">10 GB</button>
+          <button type="button" class="preset" data-size="50" data-unit="GB">50 GB</button>
+          <button type="button" class="preset" data-size="100" data-unit="GB">100 GB</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Content type</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="content" value="zeros" checked />
+            Zeros (fast)
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="content" value="random" />
+            Random bytes
+          </label>
+        </div>
+        <p class="hint">Zeros are highly compressible. Random data is better for realistic write-speed tests.</p>
+      </div>
+
+      <div id="largeWarning" class="warning-box">
+        Large files (≥ 2 GB) work best in Chrome / Edge / Opera using the File System Access API.
+        Generation may take a while and will use disk space equal to the file size.
+      </div>
+
+      <button class="btn" id="generateBtn">Generate &amp; Save File</button>
+      <button class="btn btn-secondary" id="cancelBtn" style="display: none;">Cancel</button>
+
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text">
+          <span id="progressLabel">Preparing…</span>
+          <span id="progressPct">0%</span>
+        </div>
+      </div>
+
+      <div class="status" id="status"></div>
+    </div>
+
+    <footer>
+      Runs entirely in your browser. No data is uploaded.<br />
+      For files larger than a few hundred MB, Chromium browsers are recommended.
+    </footer>
+  </div>
+
+  <script>
+    const CHUNK_SIZE = 4 * 1024 * 1024; // 4 MB chunks
+    const BLOB_LIMIT = 512 * 1024 * 1024; // Prefer File System API above ~512 MB
+
+    const $ = (id) => document.getElementById(id);
+
+    const sizeInput = $("size");
+    const unitSelect = $("unit");
+    const filenameInput = $("filename");
+    const generateBtn = $("generateBtn");
+    const cancelBtn = $("cancelBtn");
+    const progressWrap = $("progressWrap");
+    const progressFill = $("progressFill");
+    const progressLabel = $("progressLabel");
+    const progressPct = $("progressPct");
+    const statusEl = $("status");
+    const largeWarning = $("largeWarning");
+
+    let abortController = null;
+
+    // Presets
+    document.querySelectorAll(".preset").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        sizeInput.value = btn.dataset.size;
+        unitSelect.value = btn.dataset.unit;
+        updateWarning();
+      });
+    });
+
+    sizeInput.addEventListener("input", updateWarning);
+    unitSelect.addEventListener("change", updateWarning);
+
+    function updateWarning() {
+      const bytes = getTargetBytes();
+      largeWarning.classList.toggle("visible", bytes >= 2 * 1024 * 1024 * 1024);
+    }
+
+    function getTargetBytes() {
+      const val = parseFloat(sizeInput.value);
+      if (!val || val <= 0) return 0;
+      const unit = unitSelect.value;
+      if (unit === "KB") return Math.round(val * 1024);
+      if (unit === "MB") return Math.round(val * 1024 * 1024);
+      if (unit === "GB") return Math.round(val * 1024 * 1024 * 1024);
+      return 0;
+    }
+
+    function formatBytes(bytes) {
+      if (bytes < 1024) return bytes + " B";
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+      if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+      return (bytes / (1024 * 1024 * 1024)).toFixed(2) + " GB";
+    }
+
+    function showStatus(msg, type = "info") {
+      statusEl.textContent = msg;
+      statusEl.className = "status visible " + type;
+    }
+
+    function hideStatus() {
+      statusEl.className = "status";
+    }
+
+    function setProgress(written, total) {
+      const pct = total > 0 ? Math.min(100, (written / total) * 100) : 0;
+      progressFill.style.width = pct + "%";
+      progressPct.textContent = pct.toFixed(1) + "%";
+      progressLabel.textContent = `${formatBytes(written)} / ${formatBytes(total)}`;
+    }
+
+    function createChunk(size, useRandom) {
+      const buf = new Uint8Array(size);
+      if (useRandom) {
+        // Fill in smaller sub-chunks for better performance
+        const sub = 65536;
+        for (let i = 0; i < size; i += sub) {
+          const len = Math.min(sub, size - i);
+          crypto.getRandomValues(buf.subarray(i, i + len));
+        }
+      }
+      // zeros: leave as is (already zero-filled)
+      return buf;
+    }
+
+    async function generateWithFileSystemAPI(filename, totalBytes, useRandom) {
+      if (!window.showSaveFilePicker) {
+        throw new Error("File System Access API not supported");
+      }
+
+      const handle = await window.showSaveFilePicker({
+        suggestedName: filename,
+        types: [
+          {
+            description: "Binary file",
+            accept: { "application/octet-stream": [".bin", ".dat", ".tmp"] },
+          },
+        ],
+      });
+
+      const writable = await handle.createWritable();
+      abortController = new AbortController();
+      const signal = abortController.signal;
+
+      let written = 0;
+      try {
+        while (written < totalBytes) {
+          if (signal.aborted) throw new DOMException("Aborted", "AbortError");
+
+          const remaining = totalBytes - written;
+          const chunkLen = Math.min(CHUNK_SIZE, remaining);
+          const chunk = createChunk(chunkLen, useRandom);
+          await writable.write(chunk);
+          written += chunkLen;
+          setProgress(written, totalBytes);
+
+          // Yield so UI stays responsive
+          await new Promise((r) => setTimeout(r, 0));
+        }
+        await writable.close();
+        return true;
+      } catch (err) {
+        try { await writable.abort(); } catch (_) {}
+        throw err;
+      }
+    }
+
+    async function generateWithBlob(filename, totalBytes, useRandom) {
+      // For moderately large files we still build a Blob from chunks.
+      // Browsers usually handle a few hundred MB to ~1–2 GB depending on RAM.
+      const chunks = [];
+      let written = 0;
+      abortController = new AbortController();
+      const signal = abortController.signal;
+
+      while (written < totalBytes) {
+        if (signal.aborted) throw new DOMException("Aborted", "AbortError");
+
+        const remaining = totalBytes - written;
+        const chunkLen = Math.min(CHUNK_SIZE, remaining);
+        chunks.push(createChunk(chunkLen, useRandom));
+        written += chunkLen;
+        setProgress(written, totalBytes);
+        await new Promise((r) => setTimeout(r, 0));
+      }
+
+      const blob = new Blob(chunks, { type: "application/octet-stream" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      // Delay revoke so download can start
+      setTimeout(() => URL.revokeObjectURL(url), 10_000);
+      return true;
+    }
+
+    async function startGeneration() {
+      const totalBytes = getTargetBytes();
+      if (totalBytes < 10 * 1024) {
+        showStatus("Minimum size is 10 KB.", "error");
+        return;
+      }
+      if (totalBytes > 100 * 1024 * 1024 * 1024) {
+        showStatus("Maximum size is 100 GB.", "error");
+        return;
+      }
+
+      let filename = filenameInput.value.trim() || "test-file.bin";
+      if (!filename.includes(".")) filename += ".bin";
+
+      const useRandom = document.querySelector('input[name="content"]:checked').value === "random";
+
+      hideStatus();
+      progressWrap.classList.add("visible");
+      setProgress(0, totalBytes);
+      generateBtn.disabled = true;
+      cancelBtn.style.display = "block";
+
+      const start = performance.now();
+
+      try {
+        // Prefer File System Access API for large files when available
+        const preferFS = totalBytes > BLOB_LIMIT && "showSaveFilePicker" in window;
+
+        if (preferFS || (totalBytes > 50 * 1024 * 1024 && "showSaveFilePicker" in window)) {
+          showStatus("Choose where to save the file…", "info");
+          await generateWithFileSystemAPI(filename, totalBytes, useRandom);
+        } else {
+          showStatus("Generating file in memory…", "info");
+          await generateWithBlob(filename, totalBytes, useRandom);
+        }
+
+        const elapsed = ((performance.now() - start) / 1000).toFixed(1);
+        showStatus(`Done! ${formatBytes(totalBytes)} written in ${elapsed}s.`, "success");
+      } catch (err) {
+        if (err.name === "AbortError") {
+          showStatus("Cancelled.", "info");
+        } else if (err.name === "AbortError" || err.message?.includes("user")) {
+          showStatus("Save cancelled by user.", "info");
+        } else {
+          console.error(err);
+          showStatus("Error: " + (err.message || err), "error");
+        }
+      } finally {
+        generateBtn.disabled = false;
+        cancelBtn.style.display = "none";
+        abortController = null;
+      }
+    }
+
+    generateBtn.addEventListener("click", startGeneration);
+
+    cancelBtn.addEventListener("click", () => {
+      if (abortController) abortController.abort();
+    });
+
+    // Initial warning state
+    updateWarning();
+  </script>
+</body>
+</html>
